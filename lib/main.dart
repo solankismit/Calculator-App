@@ -1,13 +1,21 @@
 import 'package:calculator/services/MyButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:math_expressions/math_expressions.dart';
 
-void main() => runApp(
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(
     MaterialApp(
       theme: ThemeData(
         fontFamily: 'Schyler'
       ),
         home: Calculator()));
+}
 
 class Calculator extends StatefulWidget {
   const Calculator({Key? key}) : super(key: key);
@@ -42,6 +50,15 @@ class _CalculatorState extends State<Calculator> {
     // '+-',
     '='
   ];
+
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

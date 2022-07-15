@@ -1,6 +1,7 @@
 import 'package:calculator/services/MyButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 Future<void> main() async {
@@ -10,11 +11,7 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
   runApp(
-    MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Schyler'
-      ),
-        home: Calculator()));
+      MaterialApp(theme: ThemeData(fontFamily: 'Schyler'), home: Calculator()));
 }
 
 class Calculator extends StatefulWidget {
@@ -44,7 +41,7 @@ class _CalculatorState extends State<Calculator> {
     '1',
     '2',
     '3',
-    'X',
+    '×',
     '0',
     '.',
     // '+-',
@@ -61,9 +58,10 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) {
+    String? swipeDirection;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Calculator', style: TextStyle(fontSize: 50)),
+          // title: Text('Calculator', style: TextStyle(fontSize: 50)),
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
@@ -71,147 +69,168 @@ class _CalculatorState extends State<Calculator> {
           children: [
             Expanded(
               flex: 1,
-              child: GestureDetector(
-                onHorizontalDragEnd: (DragEndDetails) {
-                  print("HORIZONTAL DETECTED");
-                  setState(() {
-                    userInput = userInput.substring(0, userInput.length - 1);
-                  });
-                },
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(20),
+              // child: SizedBox.expand(
+
+              // onHorizontalDragEnd: (DragEndDetails details) {
+              //   if (details.primaryVelocity! < 0) {
+              //     // User swiped Right{
+              //     print("HORIZONTAL DETECTED");
+              //     setState(() {
+              //       userInput =
+              //           userInput.substring(0, userInput.length - 1);
+              //     });
+              //   }
+              // },
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onHorizontalDragEnd: (DragEndDetails details) {
+                        print("Drag End : " +
+                            details.velocity.pixelsPerSecond.dx.toString());
+                        setState(() {
+                          if (details.velocity.pixelsPerSecond.dx > 0 ||
+                              details.velocity.pixelsPerSecond.dx < 0) {
+                            userInput =
+                                userInput.substring(0, userInput.length - 1);
+                          }
+                        });
+                      },
+                      onHorizontalDragDown: (DragDownDetails details) {
+                        print("Down : " +
+                            details.globalPosition.toString() +
+                            "  " +
+                            details.localPosition.toString());
+                      },
+                      onHorizontalDragStart: (DragStartDetails details) {
+                        print("Start : " +
+                            details.sourceTimeStamp.toString() +
+                            "  " +
+                            details.localPosition.toString());
+                      },
+                      onHorizontalDragCancel: () {
+                        print("Cancelled");
+                      },
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(20, 20, 40, 20),
                         alignment: Alignment.centerRight,
                         child: Text(userInput,
                             style:
                                 TextStyle(fontSize: 20, color: Colors.white)),
                       ),
-                      Container(
-                          padding: EdgeInsets.all(15),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            result,
-                            style: TextStyle(
-                              fontSize: 70,
-                              color: Colors.white,
-                              // fontWeight: FontWeight.bold
-                            ),
-                          ))
-                    ],
-                  ),
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(15),
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          result,
+                          style: const TextStyle(
+                            fontSize: 70,
+                            color: Colors.white,
+                            // fontWeight: FontWeight.bold
+                          ),
+                        ))
+                  ],
                 ),
               ),
             ),
+            // ),
             Expanded(
                 flex: 2,
                 child: Container(
                   padding: EdgeInsets.all(0),
                   margin: EdgeInsets.all(1),
-                  child: GridView.builder(
-                      itemCount: buttons.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4),
+                  child: StaggeredGridView.countBuilder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: buttons.length,
+                    // mainAxisSpacing: 0,
+                    // crossAxisSpacing: 10,
+                    crossAxisCount: 4,
 
-                      itemBuilder: (BuildContext context, int index) {
-                        //Clear Button
-                        if (index == 0) {
-                          return MyButton(
-                            buttonText: buttons[index],
-                            color: Colors.grey.shade400,
-                            textColor: Colors.black,
-                            buttonTapped: () {
-                              setState(() {
-                                userInput = '0';
-                                result = '0';
-                              });
-                            },
-                          );
-                        }
+                    itemBuilder: (BuildContext context, int index) {
+                      //Clear Button
+                      if (index == 0) {
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey.shade400,
+                          textColor: Colors.black,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput = '0';
+                              result = '0';
+                            });
+                          },
+                        );
+                      }
 
-                        //+/- Button
-                        else if (index == 1) {
-                          return MyButton(
-                            buttonText: buttons[index],
-                            color: Colors.grey.shade400,
-                            textColor: Colors.black,
-                            buttonTapped: () {
-                              setState(() {
-                                userInput = userInput.replaceRange(
-                                                0, userInput.length, Negate(userInput));
-                              });
-                            },
-                          );
-                        }
-
-                        //+- button
-                        // if (index == 18) {
-                        //   return MyButton(
-                        //     buttonText: buttons[index],
-                        //     color: Colors.grey[400],
-                        //     textColor: Colors.black,
-                        //     buttonTapped: () {
-                        //       setState(() {
-                        //         userInput = userInput.replaceRange(
-                        //             0, userInput.length, Negate(userInput));
-                        //       });
-                        //     },
-                        //   );
-                        // }
-                        //Equal Button
-                        else if (index == 18) {
-                          return MyButton(
-                            buttonText: buttons[index],
-                            color: Colors.orange[700],
-                            textColor: Colors.white,
-                            buttonTapped: () {
-                              setState(() {
-                                equalPressed();
-                              });
-                            },
-                          );
-                        } else if (index == 2) {
-                          return MyButton(
-                            buttonText: buttons[index],
-                            color: Colors.grey[400],
-                            textColor: Colors.black,
-                            buttonTapped: () {
-                              setState(() {
+                      //+/- Button
+                      else if (index == 1) {
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey.shade400,
+                          textColor: Colors.black,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput = userInput.replaceRange(
+                                  0, userInput.length, Negate(userInput));
+                            });
+                          },
+                        );
+                      }
+                      //Equal Button
+                      else if (index == 18) {
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.orange[700],
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              equalPressed();
+                            });
+                          },
+                        );
+                      } else if (index == 2) {
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[400],
+                          textColor: Colors.black,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput =
+                                  OperatorAdder(userInput, buttons[index]);
+                            });
+                          },
+                        );
+                      } else {
+                        return MyButton(
+                          buttonTapped: () {
+                            setState(() {
+                              if (!isOperator(buttons[index])) {
+                                userInput += buttons[index];
+                              } else {
                                 userInput =
                                     OperatorAdder(userInput, buttons[index]);
-                              });
-                            },
-                          );
-                        } else {
-                          return MyButton(
-                            buttonTapped: () {
-                              setState(() {
-                                if (!isOperator(buttons[index])) {
-                                  userInput += buttons[index];
-                                } else {
-                                  userInput =
-                                      OperatorAdder(userInput, buttons[index]);
-                                }
-                              });
-                            },
-                            textColor: Colors.white,
-                            buttonText: buttons[index],
-                            color: isOperator(buttons[index])
-                                ? Colors.amber.shade600
-                                : Colors.grey[800],
-                          );
-                        }
-                      }),
+                              }
+                            });
+                          },
+                          alignment: index == 16?0.4 :1,
+                          textColor: Colors.white,
+                          buttonText: buttons[index],
+                          color: isOperator(buttons[index])
+                              ? Colors.amber.shade600
+                              : Colors.grey[800],
+                        );
+                      }
+                    }, staggeredTileBuilder: (int index) => StaggeredTile.count(index==16?2:1, 1)
+                  ),
                 ))
           ],
         ));
   }
 
   bool isOperator(String str) {
-    if (str == '%' || str == '/' || str == '+' || str == '-' || str == 'X') {
+    if (str == '%' || str == '/' || str == '+' || str == '-' || str == '×') {
       return true;
     }
     return false;

@@ -58,7 +58,7 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) {
-    String? swipeDirection;
+
     return Scaffold(
         appBar: AppBar(
           // title: Text('Calculator', style: TextStyle(fontSize: 50)),
@@ -125,8 +125,8 @@ class _CalculatorState extends State<Calculator> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           result,
-                          style: const TextStyle(
-                            fontSize: 70,
+                          style:  TextStyle(
+                            fontSize: result.length>6?50:100,
                             color: Colors.white,
                             // fontWeight: FontWeight.bold
                           ),
@@ -140,12 +140,12 @@ class _CalculatorState extends State<Calculator> {
                 flex: 2,
                 child: Container(
                   padding: EdgeInsets.all(0),
-                  margin: EdgeInsets.all(1),
+                  margin: EdgeInsets.all(5),
                   child: StaggeredGridView.countBuilder(
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: buttons.length,
-                    // mainAxisSpacing: 0,
-                    // crossAxisSpacing: 10,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 5,
                     crossAxisCount: 4,
 
                     itemBuilder: (BuildContext context, int index) {
@@ -214,7 +214,6 @@ class _CalculatorState extends State<Calculator> {
                               }
                             });
                           },
-                          alignment: index == 16?0.4 :1,
                           textColor: Colors.white,
                           buttonText: buttons[index],
                           color: isOperator(buttons[index])
@@ -253,7 +252,7 @@ class _CalculatorState extends State<Calculator> {
 
   void equalPressed() {
     String finaluserinput = userInput;
-    finaluserinput = userInput.replaceAll('X', '*');
+    finaluserinput = userInput.replaceAll('×', '*');
 
     Parser p = Parser();
     Expression exp = p.parse(finaluserinput);

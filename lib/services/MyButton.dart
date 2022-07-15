@@ -6,36 +6,40 @@ class MyButton extends StatelessWidget {
   final buttonTapped;
   final String buttonText;
   final textColor;
-  var alignment = 1.0;
-  MyButton({this.color,this.buttonTapped,required this.buttonText,this.textColor,this.alignment=1});
+  // var alignment = 1.0;
+  MyButton({this.color,this.buttonTapped,required this.buttonText,this.textColor});
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return MaterialButton(
+      padding: buttonText=='0'?EdgeInsets.only(right: 100):EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(60))),
+      onPressed: buttonTapped,
+      color: color,
 
-      onTap: buttonTapped,
-      child: Padding(
-        padding: EdgeInsets.all(5),
-          child: ClipRRect(
+      // child: Padding(
+        // padding: EdgeInsets.all(7),
+        //   child: ClipRRect(
 
             // backgroundColor: color,
             // child: Text(buttonText),
-            borderRadius: BorderRadius.all(Radius.circular(50)),
-              child: Container(
-                alignment: Alignment.lerp(Alignment.centerLeft, Alignment.center, alignment),
-                color:  color,
+            // borderRadius: BorderRadius.all(Radius.circular(50)),
+            //   child: Container(
+            //     alignment: Alignment.lerp(Alignment.centerLeft, Alignment.center, alignment),
+            //     color:  color,
                 // child: Center(
                   child: Text(
                     buttonText,
                     style: TextStyle(
                       color: textColor,
+
                       // fontWeight: FontWeight.bold,
-                      fontSize: 35
+                      fontSize: 30
                   ),
                 ),
               // ),
-            ),
-          ),
-        ),
+            // ),
+          // ),
+        // ),
     );
   }
 }

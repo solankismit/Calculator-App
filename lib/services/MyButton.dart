@@ -11,6 +11,7 @@ class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+
       padding: buttonText=='0'?EdgeInsets.only(right: 100):EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(60))),
       onPressed: buttonTapped,
@@ -32,7 +33,7 @@ class MyButton extends StatelessWidget {
                     style: TextStyle(
                       color: textColor,
 
-                      // fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 30
                   ),
                 ),

@@ -28,6 +28,7 @@ class _CalculatorState extends State<Calculator> {
   var selectedOpr = '';
   var temp = '';
   var tempres = '';
+  dynamic clearbtn = 'AC';
   final List<String> buttons = [
     'AC',
     '+/-',
@@ -71,6 +72,8 @@ class _CalculatorState extends State<Calculator> {
         ),
         backgroundColor: Colors.black,
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Expanded(
               //   flex: 1,
@@ -87,8 +90,10 @@ class _CalculatorState extends State<Calculator> {
                 //   }
                 // },
               Container(
-                height: height*0.27,
-                width: width,
+                // constraints: BoxConstraints(minHeight: 10,minWidth: width,maxHeight: height,maxWidth: width),
+                // alignment: AlignmentDirectional.topCenter,
+                // height: height*0.27,
+                // width: width,
                 child:
                       GestureDetector(
                         onHorizontalDragEnd: (DragEndDetails details) {
@@ -112,12 +117,12 @@ class _CalculatorState extends State<Calculator> {
                           });
                         },
                         child: Container(
-                            padding: EdgeInsets.fromLTRB(20, 7, 20, 7),
+                            padding: EdgeInsets.fromLTRB(10, 7, 10, 0),
                             alignment: Alignment.centerRight,
                             child: Text(
                               result,
                               style: TextStyle(
-                                fontSize: result.length > 5 ? 50 : 100,
+                                fontSize: result.length > 5 ? 70 : 100,
                                 color: Colors.white,
                                 // fontWeight: FontWeight.bold
                               ),
@@ -127,7 +132,7 @@ class _CalculatorState extends State<Calculator> {
               //     flex: 2,
               //     child:
                   Container(
-                    width: width,
+                    // width: width,
                     // alignment: Alignment.bottomCenter,
                     height: height*0.6,
                     padding: EdgeInsets.all(0),
@@ -142,11 +147,12 @@ class _CalculatorState extends State<Calculator> {
                           //Clear Button
                           if (index == 0) {
                             return MyButton(
-                              buttonText: buttons[index],
+                              buttonText: result.length>0 ? 'C' : clearbtn,
                               color: Colors.grey.shade500,
                               textColor: Colors.black,
                               buttonTapped: () {
                                 setState(() {
+                                  clearbtn = 'AC';
                                   temp = '';
                                   selectedOpr = '';
                                   userInput = '';
@@ -219,7 +225,9 @@ class _CalculatorState extends State<Calculator> {
                                     } else {
                                       result +=buttons[index];
                                     }
-                                  } else {
+                                  }
+                                  else if(result.length==0){result = 'Error';}
+                                  else {
                                     selectedOpr = buttons[index];
                                     userInput =
                                         OperatorAdder(userInput, buttons[index]);

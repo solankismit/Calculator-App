@@ -1,5 +1,6 @@
 import 'package:calculator/services/MyButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:math_expressions/math_expressions.dart';
@@ -25,6 +26,8 @@ class _CalculatorState extends State<Calculator> {
   var userInput = '';
   var result = '';
   var selectedOpr = '';
+  var temp = '';
+  var tempres = '';
   final List<String> buttons = [
     'AC',
     '+/-',
@@ -67,11 +70,10 @@ class _CalculatorState extends State<Calculator> {
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Column(
+        body: Column(
             children: [
-              Expanded(
-                flex: 1,
+              // Expanded(
+              //   flex: 1,
                 // child: SizedBox.expand(
 
                 // onHorizontalDragEnd: (DragEndDetails details) {
@@ -84,62 +86,50 @@ class _CalculatorState extends State<Calculator> {
                 //     });
                 //   }
                 // },
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // GestureDetector(
-                      //   onHorizontalDragEnd: (DragEndDetails details) {
-                      //     print(
-                      //         "Drag End : ${details.velocity.pixelsPerSecond.dx}");
-                      //     setState(() {
-                      //       if (details.velocity.pixelsPerSecond.dx > 0 ||
-                      //           details.velocity.pixelsPerSecond.dx < 0) {
-                      //         userInput =
-                      //             userInput.substring(0, userInput.length - 1);
-                      //       }
-                      //     });
-                      //   },
-                      //   child: Container(
-                      //     padding: EdgeInsets.fromLTRB(20, 20, 40, 20),
-                      //     alignment: Alignment.centerRight,
-                      //     child: Text(userInput,
-                      //         style:
-                      //             TextStyle(fontSize: 20, color: Colors.white)),
-                      //   ),
-                      // ),
+              Container(
+                height: height*0.27,
+                width: width,
+                child:
                       GestureDetector(
                         onHorizontalDragEnd: (DragEndDetails details) {
                           print(
                               "Drag End : ${details.velocity.pixelsPerSecond.dx}");
                           setState(() {
-                            if (details.velocity.pixelsPerSecond.dx > 0 ||
-                                details.velocity.pixelsPerSecond.dx < 0) {
-                              result =
-                                  result.substring(0, result.length - 1);
+                            if (details.velocity.pixelsPerSecond.dx > 0 ){
+                              tempres = result;
+                              result = result.substring(0, result.length - 1);
+                              temp += tempres[tempres.length-1];
+                              print("Swipe 1");
+                              print(temp);
+                            }
+                               if ( details.velocity.pixelsPerSecond.dx < 0 && temp!='') {
+                                 print("Swipe 2");
+                              print("Before Swipe 2 : $temp");
+                              result +=temp[temp.length-1];
+                              temp=temp.substring(0,temp.length-1);
+                              print("After Swipe 2 : $temp");
                             }
                           });
                         },
                         child: Container(
-                            padding: const EdgeInsets.all(15),
+                            padding: EdgeInsets.fromLTRB(20, 7, 20, 7),
                             alignment: Alignment.centerRight,
                             child: Text(
                               result,
                               style: TextStyle(
-                                fontSize: result.length > 6 ? 50 : 100,
+                                fontSize: result.length > 5 ? 50 : 100,
                                 color: Colors.white,
                                 // fontWeight: FontWeight.bold
                               ),
                             )),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              // ),
-              Expanded(
-                  flex: 3,
-                  child: Container(
+                      ),),
+              // Expanded(
+              //     flex: 2,
+              //     child:
+                  Container(
+                    width: width,
+                    // alignment: Alignment.bottomCenter,
+                    height: height*0.6,
                     padding: EdgeInsets.all(0),
                     margin: EdgeInsets.all(5),
                     child: StaggeredGridView.countBuilder(
@@ -157,6 +147,7 @@ class _CalculatorState extends State<Calculator> {
                               textColor: Colors.black,
                               buttonTapped: () {
                                 setState(() {
+                                  temp = '';
                                   selectedOpr = '';
                                   userInput = '';
                                   result = '';
@@ -189,6 +180,7 @@ class _CalculatorState extends State<Calculator> {
                               buttonTapped: () {
                                 setState(() {
                                   selectedOpr = '';
+                                  temp='';
                                   equalPressed();
                                 });
                               },
@@ -206,7 +198,7 @@ class _CalculatorState extends State<Calculator> {
                                   //     OperatorAdder(userInput, buttons[index]);
                                   result = ((double.parse(result))*0.01).toString();
                                   userInput += '-${double.parse(result)*100}';
-                                  userInput +='+ ${result}';
+                                  userInput +='+ $result';
                                   print(userInput);
                                   print(result);
                                 });
@@ -221,8 +213,7 @@ class _CalculatorState extends State<Calculator> {
                                     if (result == '') {
                                       result += buttons[index];
                                     } else if (isOperator(
-                                            userInput[userInput.length-2]) &&
-                                        userInput != null) {
+                                            userInput[userInput.length-2])) {
                                       result = '';
                                       result += buttons[index];
                                     } else {
@@ -251,10 +242,10 @@ class _CalculatorState extends State<Calculator> {
                         },
                         staggeredTileBuilder: (int index) =>
                             StaggeredTile.count(index == 16 ? 2 : 1, 1)),
-                  ))
+                  )
             ],
           ),
-        ));
+        );
   }
 
   bool isOperator(String str) {

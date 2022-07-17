@@ -1,6 +1,7 @@
+import 'dart:ffi';
+
 import 'package:calculator/services/MyButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:math_expressions/math_expressions.dart';
@@ -23,6 +24,7 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
+  int count =0;
   var userInput = '';
   var result = '';
   var selectedOpr = '';
@@ -37,7 +39,7 @@ class _CalculatorState extends State<Calculator> {
     '7',
     '8',
     '9',
-    '+',
+    '×',
     '4',
     '5',
     '6',
@@ -45,7 +47,7 @@ class _CalculatorState extends State<Calculator> {
     '1',
     '2',
     '3',
-    '×',
+    '+',
     '0',
     '.',
     // '+-',
@@ -62,6 +64,7 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) {
+    // print("$userInput at Count $count");count++;
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
@@ -97,36 +100,41 @@ class _CalculatorState extends State<Calculator> {
                 child:
                       GestureDetector(
                         onHorizontalDragEnd: (DragEndDetails details) {
-                          print(
-                              "Drag End : ${details.velocity.pixelsPerSecond.dx}");
+                          // print(
+                          //     "Drag End : ${details.velocity.pixelsPerSecond.dx}");
                           setState(() {
                             if (details.velocity.pixelsPerSecond.dx > 0 ){
                               tempres = result;
                               result = result.substring(0, result.length - 1);
+                              userInput = userInput.substring(0, userInput.length - 1);
                               temp += tempres[tempres.length-1];
-                              print("Swipe 1");
-                              print(temp);
+                              if(result == ''){temp = '';}
+                              // print("Swipe 1");
+                              // print(temp);
                             }
-                               if ( details.velocity.pixelsPerSecond.dx < 0 && temp!='') {
-                                 print("Swipe 2");
-                              print("Before Swipe 2 : $temp");
+                            else if ( details.velocity.pixelsPerSecond.dx < 0 && temp!='') {
+                                 // print("Swipe 2");
+                              // print("Before Swipe 2 : $temp");
                               result +=temp[temp.length-1];
+                              userInput +=temp[temp.length-1];
                               temp=temp.substring(0,temp.length-1);
-                              print("After Swipe 2 : $temp");
+                              // print("After Swipe 2 : $temp");
                             }
                           });
                         },
                         child: Container(
                             padding: EdgeInsets.fromLTRB(10, 7, 10, 0),
                             alignment: Alignment.centerRight,
-                            child: Text(
+                            child: SelectableText(
                               result,
+                              toolbarOptions: ToolbarOptions(copy: true,cut: true,paste: true,selectAll: true),
                               style: TextStyle(
                                 fontSize: result.length > 5 ? 70 : 100,
                                 color: Colors.white,
                                 // fontWeight: FontWeight.bold
                               ),
-                            )),
+                            )
+                        ),
                       ),),
               // Expanded(
               //     flex: 2,
@@ -205,8 +213,8 @@ class _CalculatorState extends State<Calculator> {
                                   result = ((double.parse(result))*0.01).toString();
                                   userInput += '-${double.parse(result)*100}';
                                   userInput +='+ $result';
-                                  print(userInput);
-                                  print(result);
+                                  // print(userInput);
+                                  // print(result);
                                 });
                               },
                             );
@@ -216,13 +224,25 @@ class _CalculatorState extends State<Calculator> {
                                 setState(() {
                                   if (!isOperator(buttons[index])) {
                                     userInput += buttons[index];
-                                    if (result == '') {
+                                    if (buttons[index]=='.' && result.contains('.')){
+                                      print('in dot');
+                                      userInput = userInput.substring(0,userInput.length-2);
+                                      result = result;
+                                    }
+                                    else if (result == '' || int.parse(result.replaceAll('.',''))==0) {
+                                      print('in parse');
+                                      result='';
                                       result += buttons[index];
                                     } else if (isOperator(
                                             userInput[userInput.length-2])) {
                                       result = '';
                                       result += buttons[index];
-                                    } else {
+                                    }
+                                    // else if (buttons[index]=='.' && result.contains('.')){
+                                    //   print('in dot');
+                                    //     result = result;
+                                    // }
+                                    else {
                                       result +=buttons[index];
                                     }
                                   }
@@ -236,7 +256,7 @@ class _CalculatorState extends State<Calculator> {
                               },
                               textColor: isOperator(buttons[index])
                                   ? selectedOpr == buttons[index]
-                                      ? Colors.black
+                                      ? Colors.amber.shade800
                                       : Colors.white
                                   : Colors.white,
                               buttonText: buttons[index],
@@ -278,19 +298,24 @@ class _CalculatorState extends State<Calculator> {
       return '-' + userInput;
   }
   String equalPressed() {
+    print("Equal Called");
     if (isOperator(userInput[userInput.length - 1])) {
       result = 'Error';
       return result;
     }
+    RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
+    // print("In P-1");
     String finaluserinput = userInput;
     finaluserinput = userInput.replaceAll('×', '*');
+    print(finaluserinput);
     finaluserinput = finaluserinput.replaceAll('÷', '/');
     print(finaluserinput);
     Parser p = Parser();
     Expression exp = p.parse(finaluserinput);
+    print(exp);
     ContextModel cm = ContextModel();
     double eval = exp.evaluate(EvaluationType.REAL, cm);
-    result = eval.toString();
+    result = eval.toStringAsFixed(eval.truncateToDouble() == eval ? 0 : 10).replaceAll(regex, '');
 
     return result;
   }

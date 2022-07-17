@@ -12,7 +12,7 @@ class MyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
 
-      padding: buttonText=='0'?EdgeInsets.only(right: 100):EdgeInsets.zero,
+      padding: buttonText=='0'?EdgeInsets.only(right: 90):EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(60))),
       onPressed: buttonTapped,
       color: color,

@@ -136,7 +136,7 @@ class _CalculatorState extends State<Calculator> {
                   //Clear Button
                   if (index == 0) {
                     return MyButton(
-                      buttonText: int.parse(result.replaceAll('.', ''))==0 ? 'AC' : clearbtn,
+                      buttonText: (selectedOpr=='' &&(int.parse(result.replaceAll('.', '').replaceAll('Infinity', '0'))==0))  ? 'AC' : clearbtn,
                       color: Colors.grey.shade500,
                       textColor: Colors.black,
                       buttonTapped: () {

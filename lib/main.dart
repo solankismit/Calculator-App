@@ -235,7 +235,8 @@ class _CalculatorState extends State<Calculator> {
                                         0, userInput.length - 2);
                                     result = result;
                                   }
-                                    else{result+=buttons[index];}
+                                    else if(selectedOpr==''){result+=buttons[index];}
+                                    else{result='0.';}
                                 }
                                 else if(result[result.length-1]=='.'){
                                   result+=buttons[index];
@@ -339,7 +340,7 @@ class _CalculatorState extends State<Calculator> {
     double eval = exp.evaluate(EvaluationType.REAL, cm);
     result = eval.toString();
     print(result);
-        result = double.parse(result.replaceAll(regex, '')).toStringAsFixed(3);
+        result = double.parse(result.replaceAll(regex, '')).toStringAsFixed(3).replaceAll(regex,'');
         print(result);
 
         // result = result.replaceAll(regex, '');

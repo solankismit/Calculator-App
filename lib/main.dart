@@ -143,6 +143,7 @@ class _CalculatorState extends State<Calculator> {
                       color: Colors.grey.shade500,
                       textColor: Colors.black,
                       buttonTapped: () {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           clearbtn = 'C';
                           temp = '';
@@ -161,6 +162,7 @@ class _CalculatorState extends State<Calculator> {
                       color: Colors.grey.shade500,
                       textColor: Colors.black,
                       buttonTapped: () {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           // userInput = userInput.replaceRange(
                           //     0, userInput.length, Negate(userInput));
@@ -178,6 +180,7 @@ class _CalculatorState extends State<Calculator> {
                       color: Colors.orange[700],
                       textColor: Colors.white,
                       buttonTapped: () {
+                        HapticFeedback.heavyImpact();
                         setState(() {
                           selectedOpr = '';
                           temp = '';
@@ -194,6 +197,7 @@ class _CalculatorState extends State<Calculator> {
                       color: Colors.grey[500],
                       textColor: Colors.black,
                       buttonTapped: () {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           // userInput =
                           //     OperatorAdder(userInput, buttons[index]);
@@ -209,6 +213,7 @@ class _CalculatorState extends State<Calculator> {
                   } else {
                     return MyButton(
                       buttonTapped: () {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           if (!isOperator(buttons[index])) {
                             if (result.length <= 12) {

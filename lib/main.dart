@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:calculator/services/MyButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +27,7 @@ class Calculator extends StatefulWidget {
 
 class _CalculatorState extends State<Calculator> {
   int count = 0;
-  var userInput = '';
+  var userInput = '0';
   var result = '0';
   var selectedOpr = '';
   var temp = '';
@@ -136,7 +138,8 @@ class _CalculatorState extends State<Calculator> {
                   //Clear Button
                   if (index == 0) {
                     return MyButton(
-                      buttonText: (selectedOpr=='' &&(int.parse(result.replaceAll('.', '').replaceAll('Infinity', '0'))==0))  ? 'AC' : clearbtn,
+                      buttonText: (selectedOpr=='' && int.parse(userInput.substring(0,min(7, userInput.length)).replaceAll('-','0').replaceAll('+','0').replaceAll('×','0').replaceAll('÷','0').replaceAll('.', '0').replaceAll('', '0').replaceAll('(', '0').replaceAll(')', '0'))==0)  ? 'AC' : clearbtn,
+                      // buttonText: (selectedOpr=='' &&(int.parse(result.replaceAll('.', '').replaceAll('Infinity', '0').replaceAll('', '0'))==0))  ? 'AC' : clearbtn,
                       color: Colors.grey.shade500,
                       textColor: Colors.black,
                       buttonTapped: () {
@@ -144,7 +147,7 @@ class _CalculatorState extends State<Calculator> {
                           clearbtn = 'C';
                           temp = '';
                           selectedOpr = '';
-                          userInput = '';
+                          userInput = '0+';
                           result = '0';
                         });
                       },
@@ -163,7 +166,7 @@ class _CalculatorState extends State<Calculator> {
                           //     0, userInput.length, Negate(userInput));
                           result = result.replaceRange(
                               0, result.length, Negate(result));
-                          userInput = userInput + '+($result) $result';
+                          userInput = '$userInput+$result$result';
                         });
                       },
                     );
@@ -178,6 +181,7 @@ class _CalculatorState extends State<Calculator> {
                         setState(() {
                           selectedOpr = '';
                           temp = '';
+                          mod = false;
                           result = equalPressed();
                         });
                       },
@@ -195,7 +199,7 @@ class _CalculatorState extends State<Calculator> {
                           //     OperatorAdder(userInput, buttons[index]);
                           result = ((double.parse(result)) * 0.01).toString();
                           userInput += '-${double.parse(result) * 100}';
-                          userInput += '+ $result';
+                          userInput += '+$result';
                           mod = true;
                           // print(userInput);
                           // print(result);
@@ -215,24 +219,30 @@ class _CalculatorState extends State<Calculator> {
                                 mod = false;
                               } else {
                                 userInput += buttons[index];
-                                if (buttons[index] == '.') {
-                                  if(result.contains('.')){
+                                if (result =='') {
+                                  if(buttons[index] == '.'){
+                                    result+='0'+buttons[index];
+                                  }
+                                  else{
+                                    result += buttons[index];
+                                  }
+                                }
+                                else if (buttons[index] == '.') {
+                                  if(result == ''){result+='0'+buttons[index];}
+                                  else if(result.contains('.')){
                                     print('in dot');
                                     userInput = userInput.substring(
                                         0, userInput.length - 2);
                                     result = result;
                                   }
-                                  else{
-                                    if(result == ''){result+='0'+buttons[index];}
                                     else{result+=buttons[index];}
-                                  }
                                 }
                                 else if(result[result.length-1]=='.'){
                                   result+=buttons[index];
                                 }
                                 else if (result == '' ||
                                     int.parse(result.replaceAll('.', '')) ==
-                                        0) {
+                                        0 ) {
                                   print('in parse');
                                   result = '';
                                   result += buttons[index];
@@ -252,7 +262,7 @@ class _CalculatorState extends State<Calculator> {
                             } else {
                               showToast();
                             }
-                          } else if (result.length == 0) {
+                          } else if (result == '0') {
                             result = 'Error';
                           } else {
                             selectedOpr = buttons[index];
@@ -311,6 +321,7 @@ class _CalculatorState extends State<Calculator> {
     String result;
     print("Equal Called");
     if (isOperator(userInput[userInput.length - 1])) {
+      userInput = '0';
       result = 'Error';
       return result;
     }
@@ -318,18 +329,23 @@ class _CalculatorState extends State<Calculator> {
     // print("In P-1");
     String finaluserinput = userInput;
     finaluserinput = userInput.replaceAll('×', '*');
-    print(finaluserinput);
+    // print(finaluserinput);
     finaluserinput = finaluserinput.replaceAll('÷', '/');
-    print(finaluserinput);
+    // print(finaluserinput);
     Parser p = Parser();
     Expression exp = p.parse(finaluserinput);
     print(exp);
     ContextModel cm = ContextModel();
     double eval = exp.evaluate(EvaluationType.REAL, cm);
-    result = eval
-        .toStringAsFixed(eval.truncateToDouble() == eval ? 0 : 10)
-        .replaceAll(regex, '');
+    result = eval.toString();
+    print(result);
+        result = double.parse(result.replaceAll(regex, '')).toStringAsFixed(3);
+        print(result);
 
+        // result = result.replaceAll(regex, '');
+    // print(result);
+
+    if(result==''){result = '0';}
     return result;
   }
 
